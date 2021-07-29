@@ -4,6 +4,7 @@ const { time } = require('console');
 const express = require('express');
 const tdl = express();
 const multer = require('multer');
+const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const DEFAULT_NOTE = "You didn't leave a note."
 const DEFAULT_TIME = 'Allday'
@@ -83,6 +84,9 @@ tdl.post('/addItem', (req, res) => {
   }
   // res.json({'day' : day, 'task' : task, 'note' : note});
   console.log({'day' : day, 'time' : time, 'task' : task, 'note' : note});
+  console.log('Successfully added');
+
+  res.redirect('/');
 });
 
 const server = tdl.listen(PORT, () => console.log('Server ready'));

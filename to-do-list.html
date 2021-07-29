@@ -112,9 +112,15 @@
         //     getToDoList();
         // });
         
+        async function wait(el) {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            return el;
+        }
+        
         function clickFunction() {
             removeCurrentList();
-            getToDoList(this);
+            wait(this).then(getToDoList);
+            
         }
         function getToDoList(el) {
             let url = GET_LIST_URL + el.textContent; // if no params needed in request url
