@@ -1,17 +1,25 @@
 <!DOCTYPE html>
 <html>
+<body>
     <div>
         <p>To-Do List</p>
-        <div>
-            <form method='GET'> 
-                <button id='monday' formaction='/single-day/monday'>Monday</button>
+        <div id='day-list'>
+            <!-- <form method='GET'>  -->
+                <!-- <button id='monday' formaction='/single-day/monday'>Monday</button>
                 <button id='tuesday' formaction='/single-day/tuesday'>Tuesday</button>
                 <button id='wednesday' formaction='/single-day/wednesday'>Wednesday</button>
                 <button id='thursday' formaction='/single-day/thursday'>Thursday</button>
                 <button id='friday' formaction='/single-day/friday'>Friday</button>
                 <button id='saturday' formaction='/single-day/saturday'>Saturday</button>
-                <button id='sunday' formaction='/single-day/sunday'>Sunday</button>
-            </form>
+                <button id='sunday' formaction='/single-day/sunday'>Sunday</button> -->
+            <button id='monday'>Monday</button>
+            <button id='tuesday'>Tuesday</button>
+            <button id='wednesday'>Wednesday</button>
+            <button id='thursday'>Thursday</button>
+            <button id='friday'>Friday</button>
+            <button id='saturday'>Saturday</button>
+            <button id='sunday'>Sunday</button>
+            <!-- </form> -->
         </div>
         <div id='to-do-list'>
             <p>[To be populated]</p>
@@ -75,5 +83,71 @@
 
     </div>
 
+    <script>
+        const GET_LIST_URL = 'single-day/'
+
+        // window.addEventListener("load", init);
+        
+        // function init() {
+        //     document.getElementById('monday').addEventListener('click', clickFunction);
+        //     console.log('initialized')
+        // }
+        
+        // for (child in id('day-list').childNodes) {
+        //     console.log(child)
+        //     //child.addEventListener('click', clickFunction);
+        // }
+        document.getElementById('monday').addEventListener('click', clickFunction);
+        document.getElementById('tuesday').addEventListener('click', clickFunction);
+        document.getElementById('wednesday').addEventListener('click', clickFunction);
+        document.getElementById('thursday').addEventListener('click', clickFunction);
+        document.getElementById('friday').addEventListener('click', clickFunction);
+        document.getElementById('saturday').addEventListener('click', clickFunction);
+        document.getElementById('sunday').addEventListener('click', clickFunction);
+
+        
+        // function(this) {
+        //     removeCurrentList();
+        //     console.log('clicked');
+        //     getToDoList();
+        // });
+        
+        function clickFunction() {
+            removeCurrentList();
+            getToDoList(this);
+        }
+        function getToDoList(el) {
+            let url = GET_LIST_URL + el.textContent; // if no params needed in request url
+            fetch(url)
+            .then(checkStatus)
+            .then(function(res) {
+                let tdlist = document.createElement('p');
+                tdlist.textContent = res;
+                id('to-do-list').appendChild(tdlist);
+            })
+            .catch(console.log);
+            
+        }
+
+        function removeCurrentList() {
+            while(id('to-do-list').firstChild) {
+                id('to-do-list').removeChild(id('to-do-list').firstChild);
+            }
+
+        }
+
+        function id(name) {
+            return document.getElementById(name);
+        }
+
+        function checkStatus(response) {
+            if (response.status >= 200 && response.status < 300 || response.status == 0) {
+            return response.text();
+            } else {
+            return Promise.reject(new Error(response.status + ": " + response.statusText));
+            }
+        }
+    </script>
+</body>
     
 </html>
