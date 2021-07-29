@@ -1,10 +1,12 @@
 'use strict';
 
+const { time } = require('console');
 const express = require('express');
 const tdl = express();
 const multer = require('multer');
 const path = require('path');
 const DEFAULT_NOTE = "You didn't leave a note."
+const DEFAULT_TIME = 'Allday'
 const PORT = process.env.PORT || 8080; // localhost port 8080
 
 // var http = require('http');
@@ -68,16 +70,20 @@ tdl.post('/addItem', (req, res) => {
   let day = req.body.day;
   let task = req.body.task;
   let note = req.body.note;
+  let time = req.body.time;
   if (!(day && task)) {
-    res.status(400).send('Missing POST paramter: day and task');
+    res.status(400).send('Missing POST paramter: day and/or task');
   }
   if (!note) {
     note = DEFAULT_NOTE;
   }
-  res.json({'day' : day, 'task' : task, 'note' : note});
-  console.log('responded with json');
-});
 
+  if (!time) {
+    time = DEFAULT_TIME;
+  }
+  // res.json({'day' : day, 'task' : task, 'note' : note});
+  console.log({'day' : day, 'time' : time, 'task' : task, 'note' : note});
+});
 
 const server = tdl.listen(PORT, () => console.log('Server ready'));
 
