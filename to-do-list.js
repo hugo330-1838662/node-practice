@@ -4,6 +4,7 @@ const express = require('express');
 const tdl = express();
 const multer = require('multer');
 const path = require('path');
+const DEFAULT_NOTE = "You didn't leave a note."
 const PORT = process.env.PORT || 8080; // localhost port 8080
 
 // var http = require('http');
@@ -32,7 +33,8 @@ tdl.get('/', (req, res) => {
 
 tdl.get('/single-day/:day', (req, res) => {
     res.type('text');
-    res.send('To-do list for ' + req.params.day.toUpperCase + '.');
+
+    res.send('To-do list for ' + req.params.day.toString().toUpperCase() + '.');
 });
 
 tdl.get('/terminate', (req, res) => {
@@ -55,28 +57,25 @@ tdl.use(express.urlencoded({ extended: true })); // built-in middleware
 // for multipart/form-data (required with FormData)
 tdl.use(express.json()); // built-in middleware
 
-tdl.post('/contact', (req, res) => {
-  let name = req.body.name;
-  let email = req.body.email;
-  let message = req.body.message;
-  let timestamp = new Date.toUTCString();
-});
+// tdl.post('/contact', (req, res) => {
+//   let name = req.body.name;
+//   let email = req.body.email;
+//   let message = req.body.message;
+//   let timestamp = new Date.toUTCString();
+// });
 
 tdl.post('/addItem', (req, res) => {
-  res.type('text');
-  let name = req.body.name;
-  let catergory = req.body.category;
-  let description = req.body.catergory;
-  let image = req.body.image;
-  if (!(name && category && description)) {
-    res.status(400).send('Missing POST paramter: category, name, and/or description');
+  let day = req.body.day;
+  let task = req.body.task;
+  let note = req.body.note;
+  if (!(day && task)) {
+    res.status(400).send('Missing POST paramter: day and task');
   }
-  if (!image) {
-    image = DEFAULT_IMAGE;
+  if (!note) {
+    note = DEFAULT_NOTE;
   }
-  let result = { 'name' : name, 'description' : description, 'image' : image };
-  let dashedCategory = category.toLowerCase().replace(' ', '-');
-  let jsonFile = dashedCategory + '-proposals.json';
+  res.json({'day' : day, 'task' : task, 'note' : note});
+  console.log('responded with json');
 });
 
 
