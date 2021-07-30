@@ -3,6 +3,7 @@
 const { time } = require('console');
 const express = require('express');
 const tdl = express();
+const util = require('util');
 const multer = require('multer');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
@@ -104,9 +105,13 @@ let db = new sqlite3.Database('./db/tdlist.db', (err) => {
 
 (async () => {
   
-  db.run('CREATE TABLE IF NOT EXISTS tdlist ( \
-  name VARCHAR(83) NOT NULL, day_code INT NOT NULL REFERENCES week_days(code), \
-  time VARCHAR(2), note VARCHAR(83));');
+  db.run(
+  'CREATE TABLE IF NOT EXISTS tdlist ( \
+  name VARCHAR(83) NOT NULL, \
+  day_code INT NOT NULL REFERENCES week_days(code), \
+  time VARCHAR(2), \
+  note VARCHAR(83));'
+  );
 
   db.run('CREATE TABLE IF NOT EXISTS week_days (code INT, weekday VARCHAR(10));');
 
