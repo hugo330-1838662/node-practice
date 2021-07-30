@@ -6,8 +6,10 @@ const tdl = express();
 const multer = require('multer');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const { OPEN_CREATE } = require('sqlite3');
 const DEFAULT_NOTE = "You didn't leave a note."
 const DEFAULT_TIME = 'Allday'
+
 const PORT = process.env.PORT || 8080; // localhost port 8080
 
 // var http = require('http');
@@ -89,9 +91,44 @@ tdl.post('/addItem', (req, res) => {
   res.redirect('/');
 });
 
+//let db = new sqlite3.Database(':memory', (err) => {
+let db = new sqlite3.Database('./db/tdlist.db', (err) => {
+  if (err) {
+    return console.error(err.message);
+  }
+  console.log('Connected to the SQlite database.');
+});
+
+
+
+
+(async () => {
+  
+  db.run('CREATE TABLE IF NOT EXISTS tdlist ( \
+  name VARCHAR(83) NOT NULL, day_code INT NOT NULL REFERENCES week_days(code), \
+  time VARCHAR(2), note VARCHAR(83));');
+
+  db.run('CREATE TABLE IF NOT EXISTS week_days (code INT, weekday VARCHAR(10));');
+
+})().then(db.run('INSERT INTO week_days VALUES  (1, \'Monday\'), \
+(2, \'Tuesday\'), \
+(3, \'Wednesday\'), \
+(4, \'Thursday\'), \
+(5, \'Friday\'), \
+(6, \'Saturday\'), \
+(7, \'Sunday\');'));
+
+
 const server = tdl.listen(PORT, () => console.log('Server ready'));
 
 process.on('SIGTERM', () => {
+  db.close((err) => {
+    if (err) {
+      return console.error(err.message);
+    }
+    console.log('Close the database connection.');
+  });
+
   server.close(() => {
     console.log('Process terminated')
   });
