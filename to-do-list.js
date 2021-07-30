@@ -103,25 +103,58 @@ let db = new sqlite3.Database('./db/tdlist.db', (err) => {
 
 
 
-(async () => {
+// (async () => {
   
-  db.run(
+//   db.run(
+//   'CREATE TABLE IF NOT EXISTS tdlist ( \
+//   name VARCHAR(83) NOT NULL, \
+//   day_code INT NOT NULL REFERENCES week_days(code), \
+//   time VARCHAR(2), \
+//   note VARCHAR(83));'
+//   );
+
+//   db.run('CREATE TABLE IF NOT EXISTS week_days (code INT, weekday VARCHAR(10));');
+
+// })().then(db.run('INSERT INTO week_days VALUES  (1, \'Monday\'), \
+// (2, \'Tuesday\'), \
+// (3, \'Wednesday\'), \
+// (4, \'Thursday\'), \
+// (5, \'Friday\'), \
+// (6, \'Saturday\'), \
+// (7, \'Sunday\');'));
+
+  
+db.run(
   'CREATE TABLE IF NOT EXISTS tdlist ( \
   name VARCHAR(83) NOT NULL, \
   day_code INT NOT NULL REFERENCES week_days(code), \
   time VARCHAR(2), \
   note VARCHAR(83));'
-  );
+);
 
-  db.run('CREATE TABLE IF NOT EXISTS week_days (code INT, weekday VARCHAR(10));');
+const dbRunPromise = util.promisify(db.run);
 
-})().then(db.run('INSERT INTO week_days VALUES  (1, \'Monday\'), \
-(2, \'Tuesday\'), \
-(3, \'Wednesday\'), \
-(4, \'Thursday\'), \
-(5, \'Friday\'), \
-(6, \'Saturday\'), \
-(7, \'Sunday\');'));
+(async () => {
+  try {
+    await dbRunPromise(
+      'CREATE TABLE IF NOT EXISTS week_days (\
+        code INT, \
+        weekday VARCHAR(10));');
+    //, (res, err) => {})
+    // db.run('INSERT INTO week_days VALUES  (1, \'Monday\'), \
+    // (2, \'Tuesday\'), \
+    // (3, \'Wednesday\'), \
+    // (4, \'Thursday\'), \
+    // (5, \'Friday\'), \
+    // (6, \'Saturday\'), \
+    // (7, \'Sunday\');');
+  } catch (err) {
+    console.error(err);
+  }
+  
+})()
+
+
 
 
 const server = tdl.listen(PORT, () => console.log('Server ready'));
