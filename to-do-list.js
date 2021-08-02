@@ -1,6 +1,8 @@
 'use strict';
 
 const { time } = require('console');
+const Koa = require('koa');
+const app = new Koa();
 const express = require('express');
 const tdl = express();
 const util = require('util');
@@ -10,6 +12,41 @@ const path = require('path');
 const { OPEN_CREATE } = require('sqlite3');
 const DEFAULT_NOTE = "You didn't leave a note."
 const DEFAULT_TIME = 'Allday'
+
+'use strict';
+
+const mysql = require('mysql2');
+const con = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'liaojunxihugo330',
+  database: 'to-do-list'
+});
+
+con.connect( (err) => {
+  if (err) throw(err);
+  console.log('Connected!');
+});
+// const mysql = require('mysql');
+
+// const con = mysql.createConnection( {
+//   hots: 'localhost:8000',
+//   user: 'hugo',
+//   password: 'a123456b'
+// });
+
+// con.connect((err) => {
+//   if(err) {
+//     console.log(err)
+//     console.log('Error connecting to MySQL db.');
+//     return;
+//   }
+//   console.log('Connected to MySQL db');
+// });
+
+// con.end((err) => {
+
+// });
 
 const PORT = process.env.PORT || 8080; // localhost port 8080
 
@@ -92,13 +129,13 @@ tdl.post('/addItem', (req, res) => {
   res.redirect('/');
 });
 
-//let db = new sqlite3.Database(':memory', (err) => {
-let db = new sqlite3.Database('./db/tdlist.db', (err) => {
-  if (err) {
-    return console.error(err.message);
-  }
-  console.log('Connected to the SQlite database.');
-});
+// //let db = new sqlite3.Database(':memory', (err) => {
+// let db = new sqlite3.Database('./db/tdlist.db', (err) => {
+//   if (err) {
+//     return console.error(err.message);
+//   }
+//   console.log('Connected to the SQlite database.');
+// });
 
 
 
@@ -123,36 +160,65 @@ let db = new sqlite3.Database('./db/tdlist.db', (err) => {
 // (6, \'Saturday\'), \
 // (7, \'Sunday\');'));
 
-  
-db.run(
-  'CREATE TABLE IF NOT EXISTS tdlist ( \
-  name VARCHAR(83) NOT NULL, \
-  day_code INT NOT NULL REFERENCES week_days(code), \
-  time VARCHAR(2), \
-  note VARCHAR(83));'
-);
+// create custom async db.run  
+// const dbRunPromise = //util.promisify(db.run);
+// (q) => {
+//   return new Promise((resolve, reject) => {
+//     db.run(q, (err, res) => {
+//       if (err) { return reject(err); }
+//       resolve(res);
+//     });
+    
+//   });
+// };
 
-const dbRunPromise = util.promisify(db.run);
+// (async () => {
+//   try {
+//     await Promise.all([
+//       dbRunPromise(
+//       'CREATE TABLE IF NOT EXISTS week_days (\
+//         code INT, \
+//         weekday VARCHAR(10));'),
+//       dbRunPromise('CREATE TABLE IF NOT EXISTS tdlist ( \
+//         name VARCHAR(83) NOT NULL, \
+//         day_code INT UNIQUE NOT NULL REFERENCES week_days(code), \
+//         time VARCHAR(2), \
+//         note VARCHAR(83));')
+//     ]);
+//     // , (res, err) => {})
+//     db.run('INSERT INTO week_days VALUES  (1, \'Monday\'), \
+//     (2, \'Tuesday\'), \
+//     (3, \'Wednesday\'), \
+//     (4, \'Thursday\'), \
+//     (5, \'Friday\'), \
+//     (6, \'Saturday\'), \
+//     (7, \'Sunday\');');
+//   } catch (err) {
+//     console.error(err);
+//   }
+// })()
 
-(async () => {
-  try {
-    await dbRunPromise(
-      'CREATE TABLE IF NOT EXISTS week_days (\
-        code INT, \
-        weekday VARCHAR(10));');
-    //, (res, err) => {})
-    // db.run('INSERT INTO week_days VALUES  (1, \'Monday\'), \
-    // (2, \'Tuesday\'), \
-    // (3, \'Wednesday\'), \
-    // (4, \'Thursday\'), \
-    // (5, \'Friday\'), \
-    // (6, \'Saturday\'), \
-    // (7, \'Sunday\');');
-  } catch (err) {
-    console.error(err);
-  }
-  
-})()
+// Promise.all([
+//       dbRunPromise(
+//       'CREATE TABLE IF NOT EXISTS week_days (\
+//         code INT NOT NULL UNIQUE, \
+//         weekday VARCHAR(10));'),
+//       dbRunPromise('CREATE TABLE IF NOT EXISTS tdlist ( \
+//         name VARCHAR(83) NOT NULL, \
+//         day_code INT NOT NULL REFERENCES week_days(code), \
+//         time VARCHAR(2), \
+//         note VARCHAR(83));')
+//     ]).then(() => {
+//     db.run('INSERT INTO week_days VALUES  (1, \'Monday\'), \
+//     (2, \'Tuesday\'), \
+//     (3, \'Wednesday\'), \
+//     (4, \'Thursday\'), \
+//     (5, \'Friday\'), \
+//     (6, \'Saturday\'), \
+//     (7, \'Sunday\');', (err, res) => {
+//       if(err) { console.log(err) }
+//     })}).catch (console.log);
+
 
 
 
@@ -160,13 +226,18 @@ const dbRunPromise = util.promisify(db.run);
 const server = tdl.listen(PORT, () => console.log('Server ready'));
 
 process.on('SIGTERM', () => {
-  db.close((err) => {
+  // db.close((err) => {
+  //   if (err) {
+  //     return console.error(err.message);
+  //   }
+  //   console.log('Close the database connection.');
+  // });
+  con.end((err) => {
     if (err) {
-      return console.error(err.message);
+      return console.err(err.message);
     }
-    console.log('Close the database connection.');
+    console.log('Closing the MySQL database connection.');
   });
-
   server.close(() => {
     console.log('Process terminated')
   });
