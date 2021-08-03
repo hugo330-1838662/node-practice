@@ -19,6 +19,7 @@
             <button id='friday'>Friday</button>
             <button id='saturday'>Saturday</button>
             <button id='sunday'>Sunday</button>
+            <button id='all_week'>All Week</button>
             <!-- </form> -->
         </div>
         <div id='to-do-list'>
@@ -97,13 +98,14 @@
         //     console.log(child)
         //     //child.addEventListener('click', clickFunction);
         // }
-        document.getElementById('monday').addEventListener('click', clickFunction);
-        document.getElementById('tuesday').addEventListener('click', clickFunction);
-        document.getElementById('wednesday').addEventListener('click', clickFunction);
-        document.getElementById('thursday').addEventListener('click', clickFunction);
-        document.getElementById('friday').addEventListener('click', clickFunction);
-        document.getElementById('saturday').addEventListener('click', clickFunction);
-        document.getElementById('sunday').addEventListener('click', clickFunction);
+        id('monday').addEventListener('click', clickFunction);
+        id('tuesday').addEventListener('click', clickFunction);
+        id('wednesday').addEventListener('click', clickFunction);
+        id('thursday').addEventListener('click', clickFunction);
+        id('friday').addEventListener('click', clickFunction);
+        id('saturday').addEventListener('click', clickFunction);
+        id('sunday').addEventListener('click', clickFunction);
+        id('all_week').addEventListener('click', clickFunction);
 
         
         // function(this) {
@@ -113,7 +115,7 @@
         // });
         
         async function wait(el) {
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await new Promise(resolve => setTimeout(resolve, 0));
             return el;
         }
         
@@ -141,7 +143,8 @@
             }
 
         }
-
+        
+// Helper functions.
         function id(name) {
             return document.getElementById(name);
         }
